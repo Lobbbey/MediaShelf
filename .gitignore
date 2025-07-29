@@ -10,7 +10,7 @@ Frontend/out/ # For Next.js static exports
 
 # Backend (NestJS/Node.js) specific ignores
 Backend/node_modules
-Backend/dist/ # NestJS build output directory
+
 
 # Yarn specific ignores (if you're using Yarn workspaces or pnp)
 # Adjust these if they are global or specific to a sub-project
