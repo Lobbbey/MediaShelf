@@ -1,9 +1,17 @@
 const express = require('express');
 const mongoose = require('mongoose');
+require('dotenv').config();
 
 const app = express();
 app.use(express.json());
-app.use(express.json());
+
+// Import routes
+const usersRoutes = require('./routes/users.js');
+const mediaRoutes = require('./routes/media.js');
+
+// Use routes
+app.use('/api/users', usersRoutes);
+app.use('/api/media', mediaRoutes);
 
 app.get('/', (req, res) => res.send('API running'));
 
