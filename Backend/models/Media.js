@@ -10,7 +10,7 @@ const MediaSchema = new mongoose.Schema({
         required: true,
         enum: ["Book", "Movie", "Music", "Video Game",],
     },
-    creator:{// Author, Director, Band, etc
+    creator:{// Author, Director, Band, Publisher
         type: String,
         required: true,
     },
