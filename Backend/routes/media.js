@@ -3,6 +3,17 @@ const Media = require('../models/Media');
 const User = require('../models/User');
 const router = express.Router();
 
+// Helper functions
+function checkRequiredFields(fields, req, res){
+  for(const field of fields){
+    if(!req.body[field]){
+      res.status(400).json({ message: "Missing required fields"});
+      return false;
+    }
+  }
+  return true;
+}
+
 // Test Route
 router.get('/', (req, res) => {
   res.json({ message: 'Media route working' });
@@ -19,6 +30,7 @@ router.post('/add', async (req, res) => {
       mediaType,
       creator,
       userId,
+      formats,
       genre,
       releaseYear,
       userRating,
@@ -42,6 +54,7 @@ router.post('/add', async (req, res) => {
       mediaType,
       creator,
       user: userId,
+      formats,
       genre,
       releaseYear,
       userRating,
@@ -107,10 +120,47 @@ router.post('/search', (req, res) =>{
 // @desc Adds media to a user
 // @in updated information
 // @out Result Message and list reload
-router.post('/update', (req, res) => {
-  res.json({message: "updateMedia"});
+router.post('/update', async (req, res) => {
   try{
+    const {
+      mediaId,
+      title,
+      mediaType,
+      creator,
+      userId,
+      formats,
+      genre,
+      releaseYear,
+      userRating,
+      isbn,
+      pageCount,
+      runTimeMinutes,
+      platform,
+    } = req.body;
 
+    if(!mediaId || !userId){
+      return res.status(400).json({ message: "Missing required fields"});
+    }
+
+    const media = await Media.findById(mediaId);
+    if(!media){
+      return res.status(404).json({ message: "Media not found"});
+    }
+    
+    if (title !== undefined) media.title = title;
+    if (mediaType !== undefined) media.mediaType = mediaType;
+    if (creator !== undefined) media.creator = creator;
+    if (formats !== undefined) media.formats = formats;
+    if (genre !== undefined) media.genre = genre;
+    if (releaseYear !== undefined) media.releaseYear = releaseYear;
+    if (userRating !== undefined) media.userRating = userRating;
+    if (isbn !== undefined) media.isbn = isbn;
+    if (pageCount !== undefined) media.pageCount = pageCount;
+    if (runTimeMinutes !== undefined) media.runTimeMinutes = runTimeMinutes;
+    if (platform !== undefined) media.platform = platform;
+
+    await media.save();
+    res.status(200).json({ message: "Media updated successfully"});
   } catch(err){
     console.error("Error:", err);
     res.status(500).json({Result: error.message});

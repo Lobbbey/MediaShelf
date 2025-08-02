@@ -19,6 +19,7 @@ const MediaSchema = new mongoose.Schema({
         ref: "User",
         required: true,
     },
+    formats: [{ type: String }],
     genre: String,
     releaseYear: Number,
     userRating: Number,
