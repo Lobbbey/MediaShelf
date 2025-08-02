@@ -3,22 +3,6 @@ const Media = require('../models/Media');
 const User = require('../models/User');
 const router = express.Router();
 
-// Helper functions
-function checkRequiredFields(fields, req, res){
-  for(const field of fields){
-    if(!req.body[field]){
-      res.status(400).json({ message: "Missing required fields"});
-      return false;
-    }
-  }
-  return true;
-}
-
-// Test Route
-router.get('/', (req, res) => {
-  res.json({ message: 'Media route working' });
-});
-
 // @route POST /api/media/add
 // @desc Adds media to a user
 // @in 
@@ -98,7 +82,7 @@ router.post('/delete', async (req, res) => {
     res.status(200).json({ message: "media detleted successfully"});
   } catch(err){
     console.error("Error:", err);
-    res.status(500).json({Result: error.message});
+    res.status(500).json({Result: err.message});
   }
 });
 
@@ -106,13 +90,35 @@ router.post('/delete', async (req, res) => {
 // @desc Adds media to a user
 // @in  search params
 // @out search results
-router.post('/search', (req, res) =>{
-  res.json({message: "search media"})
+router.post('/search', async (req, res) =>{
   try{
+    const { userId, mediaType, searchTerm } = req.body;
 
+    if(!mediaType || !userId){
+      return res.status(400).json({ message: "Missing required fields"});
+    }
+
+    const query = {
+      user: userId,
+      mediaType: mediaType,
+    }
+
+    if(searchTerm){
+      const searchRegex = new RegExp(searchTerm, 'i');
+
+      query.$or = [
+        { title: searchRegex },
+        { creator: searchRegex },
+        { genre: searchRegex }
+      ];
+    }
+
+    const results = await Media.find(query);
+
+    res.status(200).json({ success: true, data: results});
   } catch(err){
     console.error("Error:", err);
-    res.status(500).json({Result: error.message});
+    res.status(500).json({Result: err.message});
   }
 });
 
@@ -163,7 +169,7 @@ router.post('/update', async (req, res) => {
     res.status(200).json({ message: "Media updated successfully"});
   } catch(err){
     console.error("Error:", err);
-    res.status(500).json({Result: error.message});
+    res.status(500).json({Result: err.message});
   }
 });
 
