@@ -8,6 +8,6 @@ import com.example.mediashelfmobile.database.MediaItem;
 import com.example.mediashelfmobile.database.AppDao;
 
 @Database(entities = {User.class, MediaItem.class}, version = 1)
-public abstract class Appdatabase extends RoomDatabase {
-    public abstract AppDao appDao();
+public abstract class AppDatabase extends RoomDatabase {
+    public abstract AppDao AppDao();
 }

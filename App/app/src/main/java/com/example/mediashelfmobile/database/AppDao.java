@@ -12,7 +12,7 @@ import java.util.List;
 public interface AppDao {
     // User Operations
     @Insert
-    void insert(User user);
+    void insertUser(User user);
 
     @Query("SELECT * FROM users WHERE username = :username AND password = :password LIMIT 1")
     User login(String username, String password);
