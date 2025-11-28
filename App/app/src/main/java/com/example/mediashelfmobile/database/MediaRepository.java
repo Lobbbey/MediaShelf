@@ -60,4 +60,8 @@ public class MediaRepository {
         return mAppDao.getMediaItemsBySearch(userId, formattedSearch);
     }
 
+    public List<MediaItem> getMediaByTypeAndSearch(int userId, String type, String searchTerm) {
+        String formattedSearch = "%" + searchTerm + "%";
+        return mAppDao.getMediaItemsByTypeAndSearch(userId, type, formattedSearch);
+    }
 }

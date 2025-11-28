@@ -42,4 +42,6 @@ public interface AppDao {
     @Query("SELECT * FROM media_items WHERE user_creator_id = :userId AND title LIKE :searchQuery")
     List<MediaItem> getMediaItemsBySearch(int userId, String searchQuery);
 
+    @Query("SELECT * FROM media_items WHERE user_creator_id = :userId AND type = :mediaType AND title LIKE :searchQuery")
+    List<MediaItem> getMediaItemsByTypeAndSearch(int userId, String mediaType, String searchQuery);
 }

@@ -1,64 +1,90 @@
+// This file contains generated code to assist with debugging and logic
 package com.example.mediashelfmobile;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
+import android.widget.Toast;
 
-import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import com.example.mediashelfmobile.database.MediaItem;
+import com.example.mediashelfmobile.database.MediaRepository;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationBarView;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link Dashboard#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class Dashboard extends Fragment {
+import java.util.List;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+public class Dashboard extends AppCompatActivity {
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public Dashboard() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment Dashboard.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static Dashboard newInstance(String param1, String param2) {
-        Dashboard fragment = new Dashboard();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    private MediaRepository repository;
+    private int currentUserId;
+    private RecyclerView recyclerView;
+    private String currentType = "Game";
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+        setContentView(R.layout.fragment_dashboard);
+
+        repository = new MediaRepository(this);
+        currentUserId = getIntent().getIntExtra("USER_ID", -1);
+
+        if (currentUserId == -1) {
+            // Error handling if user isn't passed correctly
+            finish();
+            return;
         }
+
+        recyclerView = findViewById(R.id.recycler_view_items);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
+        FloatingActionButton fab = findViewById(R.id.fab_add);
+
+        bottomNav.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem item) {
+                int id = item.getItemId();
+
+                if (id == R.id.nav_games) {
+                    currentType = "Game";
+                    loadItems();
+                    return true;
+                } else if (id == R.id.nav_movies) {
+                    currentType = "Movie";
+                    loadItems();
+                    return true;
+                } else if (id == R.id.nav_music) {
+                    currentType = "Music";
+                    loadItems();
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        fab.setOnClickListener(v -> {
+            // Navigate to Add Activity
+            Intent intent = new Intent(Dashboard.this, add_edit.class);
+            intent.putExtra("USER_ID", currentUserId);
+            startActivity(intent);
+        });
+
+        loadItems();
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_dashboard, container, false);
+    protected void onResume() {
+        super.onResume();
+        loadItems();
+    }
+
+    private void loadItems() {
+        List<MediaItem> items = repository.getMediaByType(currentUserId, currentType);
+        Toast.makeText(this, "Loaded " + items.size() + " " + currentType + "s", Toast.LENGTH_SHORT).show();
     }
 }
