@@ -1,9 +1,7 @@
-// This file contains generated code to help with errors
 package com.example.mediashelfmobile.database;
 
 import android.content.Context;
 
-import android.content.Context;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -13,13 +11,14 @@ public class MediaRepository {
     private AppDao mAppDao;
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
-    // Constructor
     public MediaRepository(Context context) {
+        // Initializes the Room Database Builder
         AppDatabase database = androidx.room.Room.databaseBuilder(context.getApplicationContext(),
                         AppDatabase.class, "media_shelf_database")
                 .allowMainThreadQueries()
                 .build();
-        mAppDao = database.AppDao();
+
+        mAppDao = database.appDao();
     }
 
     // User API methods
@@ -38,7 +37,8 @@ public class MediaRepository {
         return mAppDao.getUserByName(username) != null;
     }
 
-    // Media API methods
+    // --- Media CRUD & Retrieval Methods ---
+
     public void addMediaItem(MediaItem item){
         executorService.execute(() -> mAppDao.insertMediaItem(item));
     }
@@ -51,17 +51,19 @@ public class MediaRepository {
         executorService.execute(() -> mAppDao.deleteMediaItem(item));
     }
 
-    public  List<MediaItem> getMediaByType(int userId, String type){
-        return mAppDao.getAllMediaItemsByType(userId, type);
+    /**
+     * Gets a single MediaItem by its primary key (mediaId). Used for pre-filling the Edit screen.
+     */
+    public MediaItem getMediaItemById(int mediaId) {
+        return mAppDao.getMediaItemById(mediaId);
     }
 
-    public List<MediaItem> getMediaBySearch(int userId, String searchTerm){
+    /**
+     * Filters results by a specific media type AND search term.
+     */
+    public List<MediaItem> getMediaByTypeAndSearch(int userId, String type, String searchTerm){
+        // Adds SQL wildcards (%) to search anywhere in the title
         String formattedSearch = "%" + searchTerm  + "%";
-        return mAppDao.getMediaItemsBySearch(userId, formattedSearch);
-    }
-
-    public List<MediaItem> getMediaByTypeAndSearch(int userId, String type, String searchTerm) {
-        String formattedSearch = "%" + searchTerm + "%";
         return mAppDao.getMediaItemsByTypeAndSearch(userId, type, formattedSearch);
     }
 }

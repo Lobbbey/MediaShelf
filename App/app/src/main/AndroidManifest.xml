@@ -12,6 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MediaShelfMobile">
 
+        <!-- 1. MainActivity: Set as the app's starting point/launcher -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -21,11 +22,12 @@
             </intent-filter>
         </activity>
 
+        <!-- 2. Dashboard Activity: Must be declared so login_signup can navigate to it -->
         <activity
             android:name=".Dashboard"
             android:exported="false" />
 
-        <!-- Register the new Activity here -->
+        <!-- 3. Add/Edit Activity: Must be declared so Dashboard can navigate to it -->
         <activity
             android:name=".add_edit"
             android:exported="false" />

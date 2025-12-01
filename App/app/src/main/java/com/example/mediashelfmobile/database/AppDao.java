@@ -10,7 +10,7 @@ import java.util.List;
 
 @Dao
 public interface AppDao {
-    // User Operations
+    // --- User Operations ---
     @Insert
     void insertUser(User user);
 
@@ -20,7 +20,7 @@ public interface AppDao {
     @Query("SELECT * FROM users WHERE username = :username LIMIT 1")
     User getUserByName(String username);
 
-    // Media Operations
+    // --- Media Operations ---
     @Insert
     void insertMediaItem(MediaItem item);
 
@@ -30,18 +30,19 @@ public interface AppDao {
     @Delete
     void deleteMediaItem(MediaItem item);
 
-    // Get all Items
-    @Query("SELECT * FROM media_items WHERE user_creator_id = :userId")
-    List<MediaItem> getAllMediaItemsForUser(int userId);
+    /**
+     * NEW: Used for the long-press-to-edit feature. Fetches one item by its primary key.
+     */
+    @Query("SELECT * FROM media_items WHERE mediaId = :mediaId LIMIT 1")
+    MediaItem getMediaItemById(int mediaId);
 
     // Get all items by type
     @Query("SELECT * FROM media_items WHERE user_creator_id = :userId AND type = :mediaType")
     List<MediaItem> getAllMediaItemsByType(int userId, String mediaType);
 
-    // Get items by search
-    @Query("SELECT * FROM media_items WHERE user_creator_id = :userId AND title LIKE :searchQuery")
-    List<MediaItem> getMediaItemsBySearch(int userId, String searchQuery);
-
+    /**
+     * Query to filter results by the current media type (tab) AND the search query.
+     */
     @Query("SELECT * FROM media_items WHERE user_creator_id = :userId AND type = :mediaType AND title LIKE :searchQuery")
     List<MediaItem> getMediaItemsByTypeAndSearch(int userId, String mediaType, String searchQuery);
 }

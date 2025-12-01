@@ -1,4 +1,3 @@
-// File contains generated code to assist with debugging
 package com.example.mediashelfmobile;
 
 import android.os.Bundle;
@@ -23,14 +22,18 @@ public class add_edit extends AppCompatActivity {
 
     private MediaRepository repository;
     private int userId;
+    private int mediaIdToEdit = -1; // -1 means we are creating a NEW item
+    private MediaItem currentItem = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_add_edit); // Using your existing layout file name
+        setContentView(R.layout.fragment_add_edit);
 
-        // Get User ID passed from Dashboard
+        // Retrieve USER_ID and MEDIA_ID from the Intent
         userId = getIntent().getIntExtra("USER_ID", -1);
+        mediaIdToEdit = getIntent().getIntExtra("MEDIA_ID", -1);
+
         if (userId == -1) {
             Toast.makeText(this, "Error: User not identified", Toast.LENGTH_SHORT).show();
             finish();
@@ -57,9 +60,30 @@ public class add_edit extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         typeSpinner.setAdapter(adapter);
 
+        // CHECK FOR EDIT MODE: If mediaIdToEdit is valid, load the item
+        if (mediaIdToEdit != -1) {
+            currentItem = repository.getMediaItemById(mediaIdToEdit);
+            if (currentItem != null) {
+                // Populate fields with existing data
+                titleInput.setText(currentItem.title);
+                creatorInput.setText(currentItem.creator);
+                genreInput.setText(currentItem.genre);
+                platformInput.setText(currentItem.platform);
+                notesInput.setText(currentItem.notes);
+                ratingBar.setRating(currentItem.rating);
+
+                // Set spinner to the correct type
+                int spinnerPos = adapter.getPosition(currentItem.type);
+                typeSpinner.setSelection(spinnerPos);
+
+                // Change button text to indicate an update
+                saveButton.setText("Update Item");
+            }
+        }
+
         // Setup Button Listeners
         saveButton.setOnClickListener(v -> saveMediaItem());
-        cancelButton.setOnClickListener(v -> finish());
+        cancelButton.setOnClickListener(v -> finish()); // Close activity on cancel
     }
 
     private void saveMediaItem() {
@@ -76,13 +100,30 @@ public class add_edit extends AppCompatActivity {
             return;
         }
 
-        MediaItem newItem = new MediaItem(
-                type, title, creator, platform, genre, rating, "Owned", notes, userId
-        );
+        if (mediaIdToEdit != -1 && currentItem != null) {
+            // EDIT MODE: Update the existing item object
+            currentItem.type = type;
+            currentItem.title = title;
+            currentItem.creator = creator;
+            currentItem.platform = platform;
+            currentItem.genre = genre;
+            currentItem.rating = rating;
+            currentItem.notes = notes;
 
-        repository.addMediaItem(newItem);
+            repository.updateMediaItem(currentItem);
+            Toast.makeText(this, "Item updated!", Toast.LENGTH_SHORT).show();
 
-        Toast.makeText(this, "Item saved!", Toast.LENGTH_SHORT).show();
+        } else {
+            // ADD MODE: Create a new item object
+            // Note: The constructor order must match MediaItem.java logic exactly
+            MediaItem newItem = new MediaItem(
+                    title, type, creator, platform, genre, rating, notes, "Owned", userId
+            );
+            repository.addMediaItem(newItem);
+            Toast.makeText(this, "Item saved!", Toast.LENGTH_SHORT).show();
+        }
+
+        // Close the activity and return to the Dashboard list
         finish();
     }
 }
