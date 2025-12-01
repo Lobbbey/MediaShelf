@@ -1,3 +1,4 @@
+// This file contains generated code for debugging
 package com.example.mediashelfmobile.database;
 
 import androidx.room.Dao;
@@ -30,9 +31,6 @@ public interface AppDao {
     @Delete
     void deleteMediaItem(MediaItem item);
 
-    /**
-     * NEW: Used for the long-press-to-edit feature. Fetches one item by its primary key.
-     */
     @Query("SELECT * FROM media_items WHERE mediaId = :mediaId LIMIT 1")
     MediaItem getMediaItemById(int mediaId);
 
@@ -40,9 +38,6 @@ public interface AppDao {
     @Query("SELECT * FROM media_items WHERE user_creator_id = :userId AND type = :mediaType")
     List<MediaItem> getAllMediaItemsByType(int userId, String mediaType);
 
-    /**
-     * Query to filter results by the current media type (tab) AND the search query.
-     */
     @Query("SELECT * FROM media_items WHERE user_creator_id = :userId AND type = :mediaType AND title LIKE :searchQuery")
     List<MediaItem> getMediaItemsByTypeAndSearch(int userId, String mediaType, String searchQuery);
 }

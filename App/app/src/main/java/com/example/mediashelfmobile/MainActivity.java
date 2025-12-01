@@ -1,3 +1,4 @@
+// This file contains generated code for debugging
 package com.example.mediashelfmobile;
 
 import android.os.Bundle;
@@ -16,15 +17,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         SharedPreferences preferences = getSharedPreferences("MediaShelfPrefs", MODE_PRIVATE);
-        int userId = preferences.getInt("USER_ID", -1);// No user found
+        int userId = preferences.getInt("USER_ID", -1);
 
-        if(userId != -1){// User is logged in
+        if(userId != -1){
             Intent intent = new Intent(this, Dashboard.class);
             intent.putExtra("USER_ID", userId);
             startActivity(intent);
             finish();
         }
-        else{// User is not logged in
+        else{
             if (savedInstanceState == null) {
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.fragment_container, new login_signup())

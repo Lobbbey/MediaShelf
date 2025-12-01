@@ -1,3 +1,4 @@
+// This file contains generated code for debugging
 package com.example.mediashelfmobile;
 
 import android.content.Intent;
@@ -26,7 +27,7 @@ public class Dashboard extends AppCompatActivity implements MediaAdapter.OnItemL
     private int currentUserId;
     private RecyclerView recyclerView;
     private MediaAdapter adapter;
-    private String currentType = "Game"; // Default view
+    private String currentType = "Game";
     private TextInputEditText searchInput;
 
     @Override
@@ -34,7 +35,6 @@ public class Dashboard extends AppCompatActivity implements MediaAdapter.OnItemL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_dashboard);
 
-        // 1. Init Repository and User
         repository = new MediaRepository(this);
         currentUserId = getIntent().getIntExtra("USER_ID", -1);
 
@@ -43,11 +43,9 @@ public class Dashboard extends AppCompatActivity implements MediaAdapter.OnItemL
             return;
         }
 
-        // 2. Setup UI Elements
         recyclerView = findViewById(R.id.recycler_view_items);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // Initialize adapter, passing 'this' (the Dashboard activity) as the listener
         adapter = new MediaAdapter(this);
         recyclerView.setAdapter(adapter);
 
@@ -55,7 +53,6 @@ public class Dashboard extends AppCompatActivity implements MediaAdapter.OnItemL
         BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
         FloatingActionButton fab = findViewById(R.id.fab_add);
 
-        // 3. Setup Navigation Listener
         bottomNav.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem item) {
@@ -73,15 +70,12 @@ public class Dashboard extends AppCompatActivity implements MediaAdapter.OnItemL
             }
         });
 
-        // 4. Setup Add Button (FAB) - FOR NEW ITEMS
         fab.setOnClickListener(v -> {
             Intent intent = new Intent(Dashboard.this, add_edit.class);
             intent.putExtra("USER_ID", currentUserId);
-            // We DO NOT pass MEDIA_ID here, so add_edit knows it's a new item
             startActivity(intent);
         });
 
-        // 5. Setup Search Listener
         searchInput.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -90,7 +84,6 @@ public class Dashboard extends AppCompatActivity implements MediaAdapter.OnItemL
             @Override public void afterTextChanged(Editable s) {}
         });
 
-        // 6. Initial Load
         loadItems();
     }
 
@@ -100,14 +93,11 @@ public class Dashboard extends AppCompatActivity implements MediaAdapter.OnItemL
         loadItems();
     }
 
-    /**
-     * This handles the Long Click. We pass the MEDIA_ID so add_edit knows to load data.
-     */
     @Override
     public void onItemLongClick(MediaItem item) {
         Intent intent = new Intent(Dashboard.this, add_edit.class);
         intent.putExtra("USER_ID", currentUserId);
-        intent.putExtra("MEDIA_ID", item.mediaId); // <--- CRITICAL: Passing ID for editing
+        intent.putExtra("MEDIA_ID", item.mediaId);
         startActivity(intent);
         Toast.makeText(this, "Editing " + item.title, Toast.LENGTH_SHORT).show();
     }

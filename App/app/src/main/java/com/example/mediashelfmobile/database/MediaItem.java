@@ -1,3 +1,4 @@
+// This file contains generated code for debugging
 package com.example.mediashelfmobile.database;
 
 import androidx.room.ColumnInfo;

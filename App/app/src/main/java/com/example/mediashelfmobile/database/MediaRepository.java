@@ -1,3 +1,4 @@
+// This file contains generated code for debugging
 package com.example.mediashelfmobile.database;
 
 import android.content.Context;
@@ -12,7 +13,6 @@ public class MediaRepository {
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     public MediaRepository(Context context) {
-        // Initializes the Room Database Builder
         AppDatabase database = androidx.room.Room.databaseBuilder(context.getApplicationContext(),
                         AppDatabase.class, "media_shelf_database")
                 .allowMainThreadQueries()
@@ -21,7 +21,6 @@ public class MediaRepository {
         mAppDao = database.appDao();
     }
 
-    // User API methods
     public void RegisterUser(String username, String password){
         executorService.execute(()->{
             User newUser = new User(username, password);
@@ -37,8 +36,6 @@ public class MediaRepository {
         return mAppDao.getUserByName(username) != null;
     }
 
-    // --- Media CRUD & Retrieval Methods ---
-
     public void addMediaItem(MediaItem item){
         executorService.execute(() -> mAppDao.insertMediaItem(item));
     }
@@ -51,16 +48,11 @@ public class MediaRepository {
         executorService.execute(() -> mAppDao.deleteMediaItem(item));
     }
 
-    /**
-     * Gets a single MediaItem by its primary key (mediaId). Used for pre-filling the Edit screen.
-     */
+
     public MediaItem getMediaItemById(int mediaId) {
         return mAppDao.getMediaItemById(mediaId);
     }
 
-    /**
-     * Filters results by a specific media type AND search term.
-     */
     public List<MediaItem> getMediaByTypeAndSearch(int userId, String type, String searchTerm){
         // Adds SQL wildcards (%) to search anywhere in the title
         String formattedSearch = "%" + searchTerm  + "%";

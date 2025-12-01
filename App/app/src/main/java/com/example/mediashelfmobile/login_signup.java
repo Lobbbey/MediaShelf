@@ -45,22 +45,18 @@ public class login_signup extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_login_signup, container, false);
 
-        // Find UI elements
         usernameInput = view.findViewById(R.id.username_edit_text);
         passwordInput = view.findViewById(R.id.password_edit_text);
         loginButton = view.findViewById(R.id.login_button);
         signupButton = view.findViewById(R.id.signup_button);
 
-        // Set up listeners
         loginButton.setOnClickListener(v -> handleLogin());
         signupButton.setOnClickListener(v -> handleSignup());
 
         return view;
     }
-
 
     private void saveUserSession(int userId) {
         if (getActivity() != null) {
@@ -82,7 +78,7 @@ public class login_signup extends Fragment {
 
         User user = mediaRepo.loginUser(username, password);
 
-        if(user != null){// Successful login
+        if(user != null){
 
             saveUserSession(user.uid);
 
@@ -90,11 +86,11 @@ public class login_signup extends Fragment {
             intent.putExtra("USER_ID", user.uid);
             startActivity(intent);
 
-            if(getActivity() != null){// Finish activity so user can't go back to login
+            if(getActivity() != null){
                 getActivity().finish();
             }
         }
-        else{// Failed login
+        else{
             Toast.makeText(getContext(), "Username or Password was incorrect", Toast.LENGTH_SHORT).show();
         }
     }
